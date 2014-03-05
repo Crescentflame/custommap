@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Jobs for VGP and GAD</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+    </style>
+    <style>
+	
+	#content {
+		margin-left: 30px;
+	}
+	
+	#content p {
+		width: 400px;
+	}
+	
+	#map {
+		height: 500px;
+	}
+	
+      #directions-panel {
+        height: 100%;
+        float: right;
+        width: 390px;
+        overflow: auto;
+      }
+
+      #map-canvas {
+        margin-right: 400px;
+      }
+
+      #control {
+        background: #fff;
+        padding: 5px;
+        font-size: 14px;
+        font-family: Arial;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 2px rgba(33, 33, 33, 0.4);
+        display: none;
+      }
+
+      @media print {
+        #map-canvas {
+          height: 500px;
+          margin: 0;
+        }
+
+        #directions-panel {
+          float: none;
+          width: auto;
+        }
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script>
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+
+function initialize() {
+  directionsDisplay = new google.maps.DirectionsRenderer();
+  var mapOptions = {
+    zoom: 9,
+    center: new google.maps.LatLng(33.7489, -84.3881)
+  };
+  
+  var map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+	  
+	  layer = new google.maps.FusionTablesLayer({
+    query: {
+      select: 'address',
+      from: '1aqCcUGvbFBUycV1uJzSx98GyDDoxh5rjq3fLDiE'
+    },
+	
+	styles: [
+       { where: "Openings > 5",
+         markerOptions: {
+            iconName: 'large_green'
+         }
+       },
+       { where: "Openings <= 5",
+         markerOptions: {
+            iconName: 'large_yellow'
+         }
+       },
+       { where: "Openings = 0",
+         markerOptions: {
+            iconName: 'large_red'
+         }
+       }]
+	
+  });
+  
+  layer.setMap(map);
+  directionsDisplay.setMap(map);
+  directionsDisplay.setPanel(document.getElementById('directions-panel'));
+
+  var control = document.getElementById('control');
+  control.style.display = 'block';
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(control);
+}
+
+function calcRoute() {
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var request = {
+    origin: start,
+    destination: end,
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+    }
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+  
+  <div id="content">
+  
+  <h2>Available Jobs for VGP and GAD Students</h2>
+  
+  <p>
+  The following map contains seven companies that are a part of the GGDA (Georgia Game Developers Association). The map gives information on whether or not the company has any available job openings with directions to that company. This map is mostly helpful to VGP and GAD students of The Art Institute of Atlanta.
+  </p>
+  
+  </div>
+  
+  <div id="map">
+  
+    <div id="control">
+      <strong>Start:</strong>
+     <input id="start" onchange="calcRoute();" />
+      <strong>End:</strong>
+      <select id="end" onchange="calcRoute();">
+        <option value="3750 Brookside Parkway Alpharetta, GA">Hi-Rez Studios</option>
+        <option value="5901 Peachtree Dunwoody Road Northeast Atlanta, GA">Kaneva</option>
+        <option value="77 East Crossville Road Roswell, GA">Tripwire Interactive</option>
+        <option value="410 Peachtree Parkway #4201 Cumming, GA">Xaviant</option>
+        <option value="1100 S Marietta Parkway Marietta, GA">SPSU Games</option>
+        <option value="1132 Rosedale Road Ne Atlanta, GA">Aura Interactive</option>
+        <option value="5295 Stone Mountain Highway Stone Mountain, GA">Holistic Design</option>
+      </select>
+
+      
+    </div>
+        <div id="directions-panel"></div>
+        <div id="map-canvas"></div>
+    </div>
+  </body>
+</html>
